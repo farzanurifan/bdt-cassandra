@@ -60,14 +60,15 @@ app.get('/', (req, res) => res.redirect('/page/1'))
 app.get('/page/:page', (req, res) => {
     var query = 'SELECT * FROM happiness'
     var page = Number(req.params.page)
-    var paginate = pagination(155, page)
     client.execute(query, [], (err, results) => {
-        console.log('haha', results)
-        res.render('index.ejs', { results: results.rows, page, ...paginate, fields })
+        var paginate = pagination(results.rowLength, page)
+        var slicer = pageItem * (page - 1)
+        var newRes = results.rows.slice(slicer, slicer + 10)
+        res.render('index.ejs', { results: newRes, page, ...paginate, fields })
     })
 })
 
-// app.get('/add', (req, res) => res.render('add.ejs', { fields }))
+app.get('/add', (req, res) => res.render('add.ejs', { fields }))
 
 // app.post('/create', (req, res) => {
 //     db.collection(table).save(req.body, (err, result) => {
