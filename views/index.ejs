@@ -1,6 +1,21 @@
+<form action='/search' method='POST' style="max-width: 500px">
+    <div class='field'>
+        <div class='control'>
+            <input class='input' type='text' placeholder='Search' name='search' value='<%= query %>'>
+        </div>
+    </div>
+    <button type='submit' class='button is-success is-small'>Search</button>
+</form>
+<br />
+<% if(!search) { %>
 <a href='/add' class='button is-success is-small' style='margin-bottom: 2em'>
     Add
 </a>
+<% } else { %>
+<a href='/' class='button is-success is-small' style='margin-bottom: 2em'>
+    Home
+</a>
+<% } %>
 <div style='overflow-x: auto; font-size: 0.8em'>
     <table class='table is-bordered is-striped is-narrow is-hoverable is-fullwidth'>
         <thead>
@@ -22,12 +37,12 @@
                         <td nowrap style='<% if(j==2) { %> <%= 'position: absolute; right: 1.5rem;' %> <% } %> width: 9em; background-color: white'>
                             <div class='columns is-gapless'>
                                 <div class='column'>
-                                    <a href=<%= '/edit/' + results[i]._id %>  class='button is-info is-small'>
+                                    <a href=<%= '/edit/' + results[i].country %>  class='button is-info is-small'>
                                         Edit
                                     </a>
                                 </div>
                                 <div class='column'>
-                                    <form action=<%= '/delete/' + results[i]._id  + '?_method=DELETE' %> method='POST'>
+                                    <form action=<%= '/delete/' + results[i].country  + '?_method=DELETE' %> method='POST'>
                                         <button type='submit' class='button is-danger is-small'>Delete</button>
                                     </form>
                                 </div>

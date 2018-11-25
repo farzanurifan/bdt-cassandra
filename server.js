@@ -53,6 +53,10 @@ const pagination = (results, page) => {
 }
 
 
+const stringFields = `country,"Happiness.Rank","Happiness.Score","Whisker.high","Whisker.low","Economy..GDP.per.Capita.","Family","Health..Life.Expectancy.","Freedom","Generosity","Trust..Government.Corruption.","Dystopia.Residual"`
+const insertQuery = input => `'${input['country']}', '${input['Happiness.Rank']}', '${input['Happiness.Score']}', '${input['Whisker.high']}', '${input['Whisker.low']}', '${input['Economy..GDP.per.Capita.']}', '${input['Family']}', '${input['Health..Life.Expectancy.']}', '${input['Freedom']}', '${input['Generosity']}', '${input['Trust..Government.Corruption.']}', '${input['Dystopia.Residual']}'`
+const updateQuery = input => `"Happiness.Rank" = '${input['Happiness.Rank']}',"Happiness.Score" = '${input['Happiness.Score']}',"Whisker.high" = '${input['Whisker.high']}',"Whisker.low" = '${input['Whisker.low']}',"Economy..GDP.per.Capita." = '${input['Economy..GDP.per.Capita.']}',"Family" = '${input['Family']}',"Health..Life.Expectancy." = '${input['Health..Life.Expectancy.']}',"Freedom" = '${input['Freedom']}',"Generosity" = '${input['Generosity']}',"Trust..Government.Corruption." = '${input['Trust..Government.Corruption.']}',"Dystopia.Residual" = '${input['Dystopia.Residual']}'`
+
 // Routing //
 
 app.get('/', (req, res) => res.redirect('/page/1'))
@@ -61,48 +65,73 @@ app.get('/page/:page', (req, res) => {
     var query = 'SELECT * FROM happiness'
     var page = Number(req.params.page)
     client.execute(query, [], (err, results) => {
+        logError(err)
         var paginate = pagination(results.rowLength, page)
         var slicer = pageItem * (page - 1)
         var newRes = results.rows.slice(slicer, slicer + 10)
-        res.render('index.ejs', { results: newRes, page, ...paginate, fields })
+        res.render('index.ejs', { results: newRes, page, ...paginate, fields, search: false, query: '' })
     })
 })
 
 app.get('/add', (req, res) => res.render('add.ejs', { fields }))
 
-// app.post('/create', (req, res) => {
-//     db.collection(table).save(req.body, (err, result) => {
-//         logError(err)
-//         logMessage('saved to database')
-//         res.redirect('/')
-//     })
-// })
+app.post('/create', (req, res) => {
+    var input = req.body;
+    var query = `INSERT INTO happiness (${stringFields}) VALUES (${insertQuery(input)})`
+    client.execute(query, [], (err, results) => {
+        logError(err)
+        logMessage('saved to database')
+        res.redirect('/')
+    })
+})
 
-// app.get('/edit/:id', (req, res) => {
-//     var id = ObjectId(req.params.id)
-//     db.collection(table).find(id).toArray((err, results) => {
-//         result = results[0]
-//         res.render('edit.ejs', { result, fields })
-//     })
-// })
+app.get('/edit/:id', (req, res) => {
+    var id = req.params.id
+    var query = `SELECT * FROM happiness WHERE country = '${id}'`
+    client.execute(query, [], (err, results) => {
+        result = results.rows[0]
+        res.render('edit.ejs', { result, fields })
+    })
+})
 
-// app.put('/update/:id', (req, res) => {
-//     var id = ObjectId(req.params.id)
-//     db.collection(table).updateOne({ _id: id }, { $set: req.body }, (err, result) => {
-//         logError(err)
-//         logMessage('updated to database')
-//         res.redirect('/')
-//     })
-// })
+app.put('/update/:id', (req, res) => {
+    var id = req.params.id
+    var input = req.body
+    var query = `UPDATE happiness SET ${updateQuery(input)} WHERE country = '${id}'`
+    client.execute(query, [], (err, results) => {
+        logError(err)
+        logMessage('updated to database')
+        res.redirect('/')
+    })
+})
 
-// app.delete('/delete/:id', (req, res) => {
-//     var id = ObjectId(req.params.id)
-//     db.collection(table).deleteOne({ _id: id }, (err, result) => {
-//         logError(err)
-//         logMessage('deleted from database')
-//         res.redirect('/')
-//     })
-// })
+app.delete('/delete/:id', (req, res) => {
+    var id = req.params.id
+    var query = `DELETE FROM happiness WHERE country = '${id}'`
+    client.execute(query, [], (err, results) => {
+        logError(err)
+        logMessage('deleted from database')
+        res.redirect('/')
+    })
+})
+
+app.post('/search', (req, res) => {
+    var search = req.body.search
+    res.redirect(`/search/${search}/page/1`)
+})
+
+app.get('/search/:search/page/:page', (req, res) => {
+    var page = Number(req.params.page)
+    var search = req.params.search
+    var query = `SELECT * FROM happiness WHERE country = '${search}'`
+    client.execute(query, [], (err, results) => {
+        logError(err)
+        var paginate = pagination(results.rowLength, page)
+        var slicer = pageItem * (page - 1)
+        var newRes = results.rows.slice(slicer, slicer + 10)
+        res.render('index.ejs', { results: newRes, page, ...paginate, fields, search: true, query: search })
+    })
+})
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
