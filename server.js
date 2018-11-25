@@ -60,6 +60,7 @@ const stringFields = `country,"Happiness.Rank","Happiness.Score","Whisker.high",
 const insertQuery = input => `'${input['country']}', '${input['Happiness.Rank']}', '${input['Happiness.Score']}', '${input['Whisker.high']}', '${input['Whisker.low']}', '${input['Economy..GDP.per.Capita.']}', '${input['Family']}', '${input['Health..Life.Expectancy.']}', '${input['Freedom']}', '${input['Generosity']}', '${input['Trust..Government.Corruption.']}', '${input['Dystopia.Residual']}'`
 const updateQuery = input => `"Happiness.Rank" = '${input['Happiness.Rank']}',"Happiness.Score" = '${input['Happiness.Score']}',"Whisker.high" = '${input['Whisker.high']}',"Whisker.low" = '${input['Whisker.low']}',"Economy..GDP.per.Capita." = '${input['Economy..GDP.per.Capita.']}',"Family" = '${input['Family']}',"Health..Life.Expectancy." = '${input['Health..Life.Expectancy.']}',"Freedom" = '${input['Freedom']}',"Generosity" = '${input['Generosity']}',"Trust..Government.Corruption." = '${input['Trust..Government.Corruption.']}',"Dystopia.Residual" = '${input['Dystopia.Residual']}'`
 
+
 // Routing //
 
 app.get('/', (req, res) => res.redirect('/page/1'))
