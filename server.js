@@ -89,6 +89,7 @@ app.get('/edit/:id', (req, res) => {
     var id = req.params.id
     var query = `SELECT * FROM happiness WHERE country = '${id}'`
     client.execute(query, [], (err, results) => {
+        logError(err)
         result = results.rows[0]
         res.render('edit.ejs', { result, fields })
     })
