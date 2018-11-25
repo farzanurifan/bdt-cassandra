@@ -9,6 +9,22 @@ const partials = require('express-partials')
 var http = require('http');
 var cassandra = require('cassandra-driver');
 
+// Express config
+var app = express();
+app.set('port', 3000);
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(methodOverride('_method'))
+app.set('view engine', 'ejs');
+app.use(partials())
+
+// Cassandra config
+var address = '192.168.33.200:9042'
+var keyspace = 'bdt'
+
+// Connect cassandra
+const client = new cassandra.Client({ contactPoints: [address], keyspace });
+client.connect((err, result) => { if (err) console.log(err) })
+
 // EJS view variables
 const pageItem = 10 // Items per page on table
 const fields = [
@@ -19,19 +35,6 @@ const fields = [
 // Log
 const logError = (err) => { if (err) return console.log(err) }
 const logMessage = (message) => console.log(message)
-
-const client = new cassandra.Client({ contactPoints: ['192.168.33.200:9042'], keyspace: 'bdt' });
-client.connect((err, result) => {
-    if (err) console.log(err)
-})
-
-// all environments
-var app = express();
-app.set('port', 3000);
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(methodOverride('_method'))
-app.set('view engine', 'ejs');
-app.use(partials())
 
 // Table pagination settings
 const pagination = (results, page) => {
@@ -52,7 +55,7 @@ const pagination = (results, page) => {
     return { pages, first, last }
 }
 
-
+// Query
 const stringFields = `country,"Happiness.Rank","Happiness.Score","Whisker.high","Whisker.low","Economy..GDP.per.Capita.","Family","Health..Life.Expectancy.","Freedom","Generosity","Trust..Government.Corruption.","Dystopia.Residual"`
 const insertQuery = input => `'${input['country']}', '${input['Happiness.Rank']}', '${input['Happiness.Score']}', '${input['Whisker.high']}', '${input['Whisker.low']}', '${input['Economy..GDP.per.Capita.']}', '${input['Family']}', '${input['Health..Life.Expectancy.']}', '${input['Freedom']}', '${input['Generosity']}', '${input['Trust..Government.Corruption.']}', '${input['Dystopia.Residual']}'`
 const updateQuery = input => `"Happiness.Rank" = '${input['Happiness.Rank']}',"Happiness.Score" = '${input['Happiness.Score']}',"Whisker.high" = '${input['Whisker.high']}',"Whisker.low" = '${input['Whisker.low']}',"Economy..GDP.per.Capita." = '${input['Economy..GDP.per.Capita.']}',"Family" = '${input['Family']}',"Health..Life.Expectancy." = '${input['Health..Life.Expectancy.']}',"Freedom" = '${input['Freedom']}',"Generosity" = '${input['Generosity']}',"Trust..Government.Corruption." = '${input['Trust..Government.Corruption.']}',"Dystopia.Residual" = '${input['Dystopia.Residual']}'`
