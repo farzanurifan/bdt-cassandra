@@ -4,17 +4,17 @@
 // Import
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
-var express = require('express');
+var express = require('express')
 const partials = require('express-partials')
-var http = require('http');
-var cassandra = require('cassandra-driver');
+var http = require('http')
+var cassandra = require('cassandra-driver')
 
 // Express config
-var app = express();
-app.set('port', 3000);
+var app = express()
+app.set('port', 3000)
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
-app.set('view engine', 'ejs');
+app.set('view engine', 'ejs')
 app.use(partials())
 
 // Cassandra config
@@ -22,7 +22,7 @@ var address = '192.168.33.200:9042'
 var keyspace = 'bdt'
 
 // Connect cassandra
-const client = new cassandra.Client({ contactPoints: [address], keyspace });
+const client = new cassandra.Client({ contactPoints: [address], keyspace })
 client.connect((err, result) => { if (err) console.log(err) })
 
 // EJS view variables
@@ -80,7 +80,7 @@ app.get('/page/:page', (req, res) => {
 app.get('/add', (req, res) => res.render('add.ejs', { fields }))
 
 app.post('/create', (req, res) => {
-    var input = req.body;
+    var input = req.body
     var query = `INSERT INTO happiness (${stringFields}) VALUES (${insertQuery(input)})`
     client.execute(query, [], (err, results) => {
         logError(err)
@@ -139,5 +139,5 @@ app.get('/search/:search/page/:page', (req, res) => {
 })
 
 http.createServer(app).listen(app.get('port'), function () {
-    console.log('Express server listening on port ' + app.get('port'));
-});
+    console.log('Express server listening on port ' + app.get('port'))
+})
