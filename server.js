@@ -58,7 +58,7 @@ const pagination = (results, page) => {
 app.get('/', (req, res) => res.redirect('/page/1'))
 
 app.get('/page/:page', (req, res) => {
-    var query = 'SELECT * FROM happiness LIMIT'
+    var query = 'SELECT * FROM happiness'
     var page = Number(req.params.page)
     var paginate = pagination(155, page)
     client.execute(query, [], (err, results) => {
