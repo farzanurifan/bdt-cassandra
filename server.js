@@ -4,13 +4,13 @@
 // Import
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
-var express = require('express')
+const express = require('express')
 const partials = require('express-partials')
-var http = require('http')
-var cassandra = require('cassandra-driver')
+const http = require('http')
+const cassandra = require('cassandra-driver')
 
 // Express config
-var app = express()
+const app = express()
 app.set('port', 3000)
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
@@ -18,8 +18,8 @@ app.set('view engine', 'ejs')
 app.use(partials())
 
 // Cassandra config
-var address = '192.168.33.200:9042'
-var keyspace = 'bdt'
+const address = '192.168.33.200:9042'
+const keyspace = 'bdt'
 
 // Connect cassandra
 const client = new cassandra.Client({ contactPoints: [address], keyspace })
