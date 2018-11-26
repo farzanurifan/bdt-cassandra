@@ -122,7 +122,12 @@ app.delete('/delete/:id', (req, res) => {
 
 app.post('/search', (req, res) => {
     var search = req.body.search
-    res.redirect(`/search/${search}/page/1`)
+    if (search) {
+        res.redirect(`/search/${search}/page/1`)
+    }
+    else {
+        res.redirect('/')
+    }
 })
 
 app.get('/search/:search/page/:page', (req, res) => {
